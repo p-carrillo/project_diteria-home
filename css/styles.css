@@ -1,0 +1,115 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    overflow-x: hidden;
+}
+
+main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.hub-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.logo {
+    max-width: 100px;
+    height: auto;
+}
+
+.brand-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 3rem;
+    letter-spacing: 0.1em;
+    color: #000000;
+}
+
+.projects-section {
+    width: 100%;
+    max-width: 800px;
+}
+
+.projects-list {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.8;
+    color: #333;
+}
+
+.project-link {
+    color: #000;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.project-link:hover {
+    color: #667eea;
+    text-decoration: underline;
+}
+
+.signature {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.signature a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.signature a:hover {
+    color: #667eea;
+}
+
+@media (max-width: 768px) {
+    .brand-name {
+        font-size: 2rem;
+    }
+    
+    .logo {
+        max-width: 100px;
+    }
+    
+    .project-card {
+        min-width: 200px;
+    }
+    
+    .signature {
+        font-size: 0.8rem;
+        bottom: 1rem;
+        right: 1rem;
+    }
+}

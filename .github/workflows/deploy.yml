@@ -29,4 +29,3 @@ jobs:
             --exclude ".github" \
             --exclude "README.md" \
             ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/"
-he p

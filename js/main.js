@@ -1,5 +1,7 @@
 const GITHUB_REPOS_URL = 'https://api.github.com/users/p-carrillo/repos?per_page=100&type=owner';
 const FETCH_TIMEOUT_MS = 8000;
+const REPOS_CACHE_KEY = 'diteria_github_repositories_cache_v1';
+const REPOS_CACHE_TTL_MS = 5 * 60 * 1000;
 const EMPTY_MESSAGE = 'No repositories available';
 
 const REPO_SECTIONS = [
@@ -127,7 +129,58 @@ function renderRepositories(repos, options) {
     });
 }
 
+function readCachedRepositories() {
+    try {
+        const rawCache = window.localStorage.getItem(REPOS_CACHE_KEY);
+        if (!rawCache) {
+            return null;
+        }
+
+        const parsedCache = JSON.parse(rawCache);
+        if (
+            !parsedCache ||
+            typeof parsedCache.cachedAt !== 'number' ||
+            !Array.isArray(parsedCache.repositories)
+        ) {
+            return null;
+        }
+
+        const repositories = parsedCache.repositories.filter(isRenderableRepo);
+        if (repositories.length === 0) {
+            return null;
+        }
+
+        return {
+            cachedAt: parsedCache.cachedAt,
+            repositories: repositories
+        };
+    } catch (error) {
+        return null;
+    }
+}
+
+function writeCachedRepositories(repositories) {
+    try {
+        const payload = JSON.stringify({
+            cachedAt: Date.now(),
+            repositories: repositories
+        });
+        window.localStorage.setItem(REPOS_CACHE_KEY, payload);
+    } catch (error) {
+        // Ignore storage errors (privacy mode, quota exceeded, etc.).
+    }
+}
+
+function isCacheFresh(cacheEntry) {
+    return Date.now() - cacheEntry.cachedAt < REPOS_CACHE_TTL_MS;
+}
+
 async function fetchRepositories() {
+    const cachedEntry = readCachedRepositories();
+    if (cachedEntry && isCacheFresh(cachedEntry)) {
+        return cachedEntry.repositories;
+    }
+
     const controller = new AbortController();
     const timeoutId = window.setTimeout(function() {
         controller.abort();
@@ -150,7 +203,17 @@ async function fetchRepositories() {
             throw new Error('GitHub API payload is not an array');
         }
 
-        return payload.filter(isRenderableRepo);
+        const repositories = payload.filter(isRenderableRepo);
+        if (repositories.length > 0) {
+            writeCachedRepositories(repositories);
+        }
+
+        return repositories;
+    } catch (error) {
+        if (cachedEntry && cachedEntry.repositories.length > 0) {
+            return cachedEntry.repositories;
+        }
+        throw error;
     } finally {
         window.clearTimeout(timeoutId);
     }
